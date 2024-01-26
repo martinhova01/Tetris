@@ -3,8 +3,6 @@ package model;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javafx.scene.paint.Color;
-
 public abstract class Piece {
 
     protected Collection<Square> squares = new ArrayList<>();
@@ -12,7 +10,7 @@ public abstract class Piece {
         // the (x, y)-position that the squares offsets are based on
     protected int x;
     protected int y;
-    protected Color color;
+    protected String color;
     protected Tetris board;
 
     public Piece(Tetris board){
@@ -35,7 +33,7 @@ public abstract class Piece {
     public Collection<Square> getSquares() {
         return squares;
     }
-    public Color getColor() {
+    public String getColor() {
         return color;
     }
 

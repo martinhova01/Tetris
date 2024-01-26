@@ -1,7 +1,5 @@
 package model;
 
-import javafx.scene.paint.Color;
-
 public class L extends Piece {
 
     
@@ -20,7 +18,7 @@ public class L extends Piece {
 
     @Override
     protected void setColor() {
-        color = Color.ORANGE;
+        color = "orange";
     }
     
 }

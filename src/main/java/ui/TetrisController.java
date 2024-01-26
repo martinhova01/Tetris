@@ -3,6 +3,7 @@ package ui;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -28,6 +29,16 @@ public class TetrisController {
     private Collection<Rect> rects = new ArrayList<>();
     private Collection<Rect> heldPiece = new ArrayList<>();
     private Collection<Rect> nextPiece = new ArrayList<>();
+
+    private static final Map<String, Color> colorMap = Map.of(
+        "red", Color.RED,
+        "purple", Color.PURPLE,
+        "green", Color.GREEN,
+        "yellow", Color.YELLOW,
+        "orange", Color.ORANGE,
+        "blue", Color.BLUE,
+        "lightblue", Color.LIGHTBLUE
+    );
     
     @FXML
     private AnchorPane gamePane, sidePane, heldPane, nextPane;
@@ -39,10 +50,11 @@ public class TetrisController {
     public void init(Scene scene) {
         this.scene = scene;
 
-        tetris = new Tetris(this);
+        tetris = new Tetris();
         sideLength = gamePane.getPrefWidth() / tetris.getWidth();
-
-            //creates the rect objects in the gameBoard
+        updateLabels();
+        
+        //creates the rect objects in the gameBoard
         for(int i = 0; i < tetris.getWidth(); i++){
             for(int j = 0; j < tetris.getHeight(); j++){
                 Square s = tetris.get(i, j);
@@ -51,14 +63,14 @@ public class TetrisController {
                     rect.setFill(Color.GREY);
                 }
                 else{
-                    rect.setFill(s.getPiece().getColor());
+                    rect.setFill(colorMap.get(s.getPiece().getColor()));
                 }
                 rect.setStroke(Color.BLACK);
                 gamePane.getChildren().add(rect);
                 rects.add(rect);
             }
         }
-            //creates the rect object for the heldpiece display and the nextpiece display
+        //creates the rect object for the heldpiece display and the nextpiece display
         double sideLengthHeld = heldPane.getPrefWidth() / 4;
         for(int i = 0; i < 4; i++){
             for (int j = 0; j < 4; j++){
@@ -67,7 +79,7 @@ public class TetrisController {
                 rectHeld.setFill(Color.GREY);
                 rectHeld.setStroke(Color.BLACK);
                 heldPane.getChildren().addAll(rectHeld);
-
+                
                 Rect rectNext = new Rect(i * sideLengthHeld, j * sideLengthHeld, sideLengthHeld, sideLengthHeld, i, j);
                 nextPiece.add(rectNext);
                 rectNext.setFill(Color.GREY);
@@ -75,13 +87,11 @@ public class TetrisController {
                 nextPane.getChildren().addAll(rectNext);
             }
         }
-
         tetris.spawnPiece();
-
-        update();
+        updateNextPieceDisplay();
 
         gameLoop = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
-            update();
+            moveDown();
         }));
         gameLoop.setCycleCount(Timeline.INDEFINITE);
         gameLoop.play();
@@ -106,15 +116,17 @@ public class TetrisController {
             tetris.rotateClockWise();
         }
         else if (e.getCode() == KeyCode.DOWN){
-            update();
+            moveDown();
         }
         else if (e.getCode() == KeyCode.SPACE){
             while(tetris.movePiece(Tetris.DOWN)){}
-            update();
+            moveDown();
         }
         else if(e.getCode() == KeyCode.SHIFT){
             tetris.holdPiece();
+            updateHeldPieceDisplay();
         }
+        updateAll();
         
 
     }
@@ -127,28 +139,20 @@ public class TetrisController {
                 r.setFill(Color.GREY);
             }
             else{
-                r.setFill(s.getPiece().getColor());
+                r.setFill(colorMap.get(s.getPiece().getColor()));
             }
         }
             
     }
 
-    public void update(){
+    public void moveDown(){
         //update model
         if(!tetris.movePiece(Tetris.DOWN)){
             tetris.spawnPiece();
+            updateNextPieceDisplay();
+            updateLabels();
         }
-    }
-
-    public void updateGUI(Square s, int x, int y) {
-        Rect r = rects.stream().filter(rect -> rect.getIndexX() == x && rect.getIndexY() == y).findAny().get();
-        
-        if(s == null){
-            r.setFill(Color.GREY);
-        }
-        else{
-            r.setFill(s.getPiece().getColor());
-        }
+        updateAll();
     }
 
     public void updateHeldPieceDisplay(){
@@ -161,7 +165,7 @@ public class TetrisController {
             int x =  1 + s.getOffsetX();
             int y =  1 + s.getOffsetY();
             Rect r = heldPiece.stream().filter(rect -> rect.getIndexX() == x && rect.getIndexY() == y).findAny().get();
-            r.setFill(s.getPiece().getColor());
+            r.setFill(colorMap.get(s.getPiece().getColor()));
         }
         
     }
@@ -175,7 +179,7 @@ public class TetrisController {
             int x =  1 + s.getOffsetX();
             int y =  1 + s.getOffsetY();
             Rect r = nextPiece.stream().filter(rect -> rect.getIndexX() == x && rect.getIndexY() == y).findAny().get();
-            r.setFill(s.getPiece().getColor());
+            r.setFill(colorMap.get(s.getPiece().getColor()));
         }
     }
 

@@ -1,7 +1,5 @@
 package model;
 
-import javafx.scene.paint.Color;
-
 public class T extends Piece{
     
     public T(Tetris board) {
@@ -18,6 +16,6 @@ public class T extends Piece{
 
     @Override
     protected void setColor() {
-        color = Color.PURPLE;
+        color = "purple";
     }
 }

@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import ui.TetrisController;
-
 public class Tetris {
 
     private List<List<Square>> grid;
@@ -17,18 +15,16 @@ public class Tetris {
     private Piece nextPiece;
     private int comboCounter;
     private int totalScore;
-    private TetrisController listener;
 
     public static final int[] DOWN = {0, 1};
     public static final int[] LEFT = {-1, 0};
     public static final int[] RIGHT = {1, 0};
 
-    public Tetris(TetrisController listener){
+    public Tetris(){
         this.grid = new ArrayList<>();
         this.height = 20;
         this.width = 10;
         this.comboCounter = 0;
-        this.listener = listener;
 
         for(int i = 0; i < height; i++){
             List<Square> newRow = new ArrayList<>();
@@ -78,7 +74,6 @@ public class Tetris {
         else{
             comboCounter = 0;
         }
-        listener.updateLabels();
         try{
             //first time a piece is spawned
             if(nextPiece == null){
@@ -89,16 +84,11 @@ public class Tetris {
                 activePiece = nextPiece;
                 nextPiece = getRandomPiece(this);
             }
-            listener.updateNextPieceDisplay();
         }
         catch(Exception e){
             e.printStackTrace();
         }
         
-
-
-        
-
         update(false);
     }
 
@@ -109,7 +99,6 @@ public class Tetris {
                 setSquare(x, y + 1, s);
             }
         }
-        listener.updateAll();
     }
 
     //from chatGPT
@@ -179,7 +168,6 @@ public class Tetris {
             activePiece.setY(1);
             update(false);
         }
-        listener.updateHeldPieceDisplay();
     }
 
     private void update(boolean remove){
@@ -187,8 +175,6 @@ public class Tetris {
             int x = activePiece.getX() + s.getOffsetX();
             int y = activePiece.getY() + s.getOffsetY();
             setSquare(x, y, remove ? null : s);
-
-            listener.updateGUI(remove ? null : s, x, y);
         }
     }
 
@@ -205,7 +191,7 @@ public class Tetris {
         return false;
     }
 
-    private void print(){
+    public void print(){
         String result = "";
         for(int i = 0; i < height; i++){
             for(int j = 0; j < width; j++){
